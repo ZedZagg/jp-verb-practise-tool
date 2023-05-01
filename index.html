@@ -7,12 +7,27 @@
 		var currentVerb;
 		var score;
 		var streak;
+		var lastSuru;
+		var suruThreshold = 5;
 	</script>
 </head>
 
 <script>
+	function isSuru(verb){
+		return verb.word[1] === "する" || verb.word[2] === "する";
+	}
+	
 	function loadVerb() {
-		currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
+		if(lastSuru > suruThreshold){
+			currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
+			if(isSuru(currentVerb)){
+				lastSuru = 0;
+			}
+		}
+		else{
+			do currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
+			while(!isSuru(currentVerb))
+		}
 		document.getElementById("furigana").innerText = currentVerb.furigana;
 		document.getElementById("kanji").innerText = currentVerb.word[0];
 		document.getElementById("kana").innerText = currentVerb.word[1];
@@ -34,6 +49,7 @@
 		jishoLink.innerText = "Jisho - " + currentVerb.word[0] + currentVerb.word[1]
 		jishoLink.style = "color: #80A0E0"
 		defEl.appendChild(jishoLink)
+		
 		console.log(currentVerb)
 	}
 	
@@ -53,6 +69,7 @@
 		loadVerbSet();
 		score = 0;
 		streak = 0;
+		lastSuru = 0;
 	}
 	
 	function checkAnswer(godan, ichidan, irregular){
