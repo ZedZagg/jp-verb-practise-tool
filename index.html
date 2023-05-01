@@ -8,7 +8,7 @@
 		var score;
 		var streak;
 		var lastSuru;
-		var suruThreshold = 5;
+		var suruThreshold;
 	</script>
 </head>
 
@@ -26,7 +26,8 @@
 		}
 		else{
 			do currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
-			while(!isSuru(currentVerb))
+			while(isSuru(currentVerb))
+			lastSuru += 1;
 		}
 		document.getElementById("furigana").innerText = currentVerb.furigana;
 		document.getElementById("kanji").innerText = currentVerb.word[0];
@@ -66,10 +67,11 @@
 	}
 	
 	function init(){
+		lastSuru = 0;
+		suruThreshold = 5;
 		loadVerbSet();
 		score = 0;
 		streak = 0;
-		lastSuru = 0;
 	}
 	
 	function checkAnswer(godan, ichidan, irregular){
