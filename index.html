@@ -1,150 +1,155 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<script src="verbs.js">
-	<script>
-		var loadedVerbs;
-		var currentVerb;
-		var score;
-		var streak;
-		var lastSuru;
-		var suruThreshold;
-	</script>
-</head>
-
-<script>
-	function isSuru(verb){
-		return verb.word[1] === "する" || verb.word[2] === "する";
-	}
-	
-	function loadVerb() {
-		if(lastSuru > suruThreshold){
-			currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
-			if(isSuru(currentVerb)){
-				lastSuru = 0;
-			}
-		}
-		else{
-			do currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
-			while(isSuru(currentVerb))
-			lastSuru += 1;
-		}
-		document.getElementById("furigana").innerText = currentVerb.furigana;
-		document.getElementById("kanji").innerText = currentVerb.word[0];
-		document.getElementById("kana").innerText = currentVerb.word[1];
-		document.getElementById("suru").innerText = currentVerb.word[2] ? currentVerb.word[2] : "";
-
-		let defEl = document.getElementById("definitions")
-		defEl.innerHTML = ""
-		for(let defSet of currentVerb.meanings){
-			for(let def of defSet){
-				const listNode = document.createElement("li");
-				const textnode = document.createTextNode(def);
-				listNode.appendChild(textnode);
-				defEl.appendChild(listNode);
-			}
-			defEl.appendChild(document.createElement("hr"))
-		}
-		const jishoLink = document.createElement("a");
-		jishoLink.href = "https://jisho.org/search/"+ currentVerb.word[0] + currentVerb.word[1]
-		jishoLink.innerText = "Jisho - " + currentVerb.word[0] + currentVerb.word[1]
-		jishoLink.style = "color: #80A0E0"
-		defEl.appendChild(jishoLink)
-		
-		console.log(currentVerb)
-	}
-	
-	function loadVerbSet(){
-		loadedVerbs = []
-		if(document.getElementById("n5").checked) loadedVerbs = loadedVerbs.concat(verbs.n5)
-		if(document.getElementById("n4").checked) loadedVerbs = loadedVerbs.concat(verbs.n4)
-		if(document.getElementById("n3").checked) loadedVerbs = loadedVerbs.concat(verbs.n3)
-		if(document.getElementById("n2").checked) loadedVerbs = loadedVerbs.concat(verbs.n2)
-		
-		if(!document.getElementById("surucheck").checked) loadedVerbs = loadedVerbs.filter(verb => verb.word[1] !== "する" && verb.word[2] !== "する")
-		
-		loadVerb();
-	}
-	
-	function init(){
-		lastSuru = 0;
-		suruThreshold = 5;
-		loadVerbSet();
-		score = 0;
-		streak = 0;
-	}
-	
-	function checkAnswer(godan, ichidan, irregular){
-		if(currentVerb.isGodan && godan){
-			score += 1;
-			streak += 1;
-			loadVerb();
-		}
-		else if(currentVerb.isIchidan && ichidan){
-			score += 1;
-			streak += 1;
-			loadVerb();
-		}
-		else if(!currentVerb.isIchidan && !currentVerb.isGodan && irregular){
-			score += 1;
-			streak += 1;
-			loadVerb();
-		}
-		else{
-			score -= 1;
-			streak = 0;
-		}
-		document.getElementById("score").innerText = "Score = " + score
-		document.getElementById("streak").innerText = "Streak = " + streak
-	}
-</script>
-
-<body style="background-color: #131516; color: #edebe8;" onload="init()">
- <table style="margin-left: auto;margin-right: auto; margin-top:7rem">
-  <tr style="font-size: 3rem; color: red; text-align: center;">
-    <td id="furigana"></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr style="font-size: 10rem;">
-    <td id="kanji" style="color:red;"></td>
-    <td id="kana"></td>
-    <td id="suru"></td>
-  </tr>
-</table> 
-<div style="position: absolute; top: 20px; left: 20px; width: 100px; border: 1px solid #edebe8; border-radius: 5px; padding: 10px">
-	<input type="checkbox" id="n5" checked onchange="loadVerbSet()">
-	<label for="n5"> N5</label><br>
-	<input type="checkbox" id="n4" checked onchange="loadVerbSet()">
-	<label for="n4"> N4</label><br>
-	<input type="checkbox" id="n3" checked onchange="loadVerbSet()">
-	<label for="n3"> N3</label><br>
-	<input type="checkbox" id="n2" checked onchange="loadVerbSet()">
-	<label for="n2"> N2</label><br> 
-	<hr/>
-	<input type="checkbox" id="surucheck" checked onchange="loadVerbSet()">
-	<label for="surucheck"> Suru Verbs</label><br>
-</div> 
-<div style="position: absolute; top: 20px; right: 20px; width: 200px; border: 1px solid #edebe8; border-radius: 5px; padding: 10px">
-	<ul id="definitions" style="padding-left:15px;">
-	</ul>
-</div> 
-
-<div style="padding-top:50px; width: 100%;">
-	<div style="margin-left: auto; margin-right: auto; width: fit-content; text-align: center; font-size: 5rem">
-		<button onclick="checkAnswer(false, true, false)" type="button" style="font-size: 3rem; margin-right: 20px; color-scheme: dark;">Ichidan</button> 
-		<button onclick="checkAnswer(true, false, false)" type="button" style="font-size: 3rem; margin-right: 20px; color-scheme: dark;">Godan</button> 
-		<button onclick="checkAnswer(false, false, true)" type="button" style="font-size: 3rem; color-scheme: dark;">Irregular</button> 
-		<hr/>
-		<div id="score">
-			Score = 0
-		</div>
-		<div id="streak">
-			Streak = 0
-		</div>
-	</div>
-	
-</div>
-
-</body>
+  <head>
+    <script src="verbs.js"></script>
+    <script>
+      var loadedVerbs = [];
+      var currentVerb;
+      var score = 0;
+      var streak = 0;
+      var lastSuru = 0;
+      var suruThreshold = 5;
+      
+      function isSuru(verb){
+        return verb.word[1] === "する" || verb.word[2] === "する";
+      }
+      
+      function showNewVerb() {
+        if(lastSuru > suruThreshold){
+          currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
+          if(isSuru(currentVerb))
+            lastSuru = 0;
+        }
+        else{
+          do currentVerb = loadedVerbs[Math.floor(Math.random() * loadedVerbs.length)];
+          while(isSuru(currentVerb))
+          lastSuru++;
+        }
+        document.getElementById("furigana").innerText = currentVerb.furigana;
+        document.getElementById("kanji").innerText = currentVerb.word[0];
+        document.getElementById("kana").innerText = currentVerb.word[1];
+        document.getElementById("suru").innerText = currentVerb.word[2] ? currentVerb.word[2] : "";
+        
+        // set up definitions element
+        let definitionEl = document.getElementById("definitions")
+        definitionEl.innerHTML = ""
+        
+        for(let definitions of currentVerb.meanings){
+          for(let def of definitions){
+            const listNode = document.createElement("li");
+            const textnode = document.createTextNode(def);
+            listNode.appendChild(textnode);
+            definitionEl.appendChild(listNode);
+          }
+          definitionEl.appendChild(document.createElement("hr"))
+        }
+        
+        const jishoLink = document.createElement("a");
+        jishoLink.href = "https://jisho.org/search/"+ currentVerb.word[0] + currentVerb.word[1]
+        jishoLink.innerText = "Jisho - " + currentVerb.word[0] + currentVerb.word[1]
+        jishoLink.style = "color: #80A0E0"
+        definitionEl.appendChild(jishoLink)
+        
+        console.log(currentVerb)
+      }
+      
+      function loadVerbSet(){
+        if(document.getElementById("n5").checked)
+          loadedVerbs = loadedVerbs.concat(verbs.n5)
+        if(document.getElementById("n4").checked)
+          loadedVerbs = loadedVerbs.concat(verbs.n4)
+        if(document.getElementById("n3").checked)
+          loadedVerbs = loadedVerbs.concat(verbs.n3)
+        if(document.getElementById("n2").checked)
+          loadedVerbs = loadedVerbs.concat(verbs.n2)
+        
+        if(!document.getElementById("surucheck").checked) 
+          loadedVerbs = loadedVerbs.filter(verb => !isSuru(verb))
+        
+        showNewVerb();
+      }
+      
+      // guess must be "ichigan" "godan" or "irregular"
+      function checkAnswer(guess){
+        function correct(){
+          score++;
+          streak++;
+          showNewVerb();
+        }
+        
+        function incorrect(){
+          score--;
+          streak = 0;
+        }
+        
+        switch(guess){
+          case 'ichidan':
+            currentVerb.isIchidan ? correct() : incorrect()
+            break;
+          case 'godan':
+            currentVerb.isGodan ? correct() : incorrect()
+            break;
+          case 'irregular':
+            !currentVerb.isIchidan & !currentVerb.isGodan ? correct() : incorrect()
+            break;
+          default:
+            console.log(`invalid guess type ${guess}`);
+            break;
+        }
+        
+        document.getElementById("score").innerText = `Score = ${score}`;
+        document.getElementById("streak").innerText = `Streak = ${streak}`;
+      }
+    </script>
+  </head>
+  
+  <body style="background-color: #131516; color: #edebe8;" onload="loadVerbSet()">
+    
+   <table style="margin-left: auto;margin-right: auto; margin-top:7rem">
+    <tr style="font-size: 3rem; color: red; text-align: center;">
+      <td id="furigana"></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr style="font-size: 10rem;">
+      <td id="kanji" style="color:red;"></td>
+      <td id="kana"></td>
+      <td id="suru"></td>
+    </tr>
+  </table> 
+    
+  <div style="position: absolute; top: 20px; left: 20px; width: 100px; border: 1px solid #edebe8; border-radius: 5px; padding: 10px">
+    <input type="checkbox" id="n5" checked onchange="loadVerbSet()">
+    <label for="n5"> N5</label><br>
+    <input type="checkbox" id="n4" checked onchange="loadVerbSet()">
+    <label for="n4"> N4</label><br>
+    <input type="checkbox" id="n3" checked onchange="loadVerbSet()">
+    <label for="n3"> N3</label><br>
+    <input type="checkbox" id="n2" checked onchange="loadVerbSet()">
+    <label for="n2"> N2</label><br> 
+    <hr/>
+    <input type="checkbox" id="surucheck" checked onchange="loadVerbSet()">
+    <label for="surucheck"> Suru Verbs</label><br>
+  </div> 
+  <div style="position: absolute; top: 20px; right: 20px; width: 200px; border: 1px solid #edebe8; border-radius: 5px; padding: 10px">
+    <ul id="definitions" style="padding-left:15px;">
+    </ul>
+  </div> 
+  
+  <div style="padding-top:50px; width: 100%;">
+    <div style="margin-left: auto; margin-right: auto; width: fit-content; text-align: center; font-size: 5rem">
+      <button onclick="checkAnswer('ichidan')" type="button" style="font-size: 3rem; margin-right: 20px; color-scheme: dark;">Ichidan</button> 
+      <button onclick="checkAnswer('godan')" type="button" style="font-size: 3rem; margin-right: 20px; color-scheme: dark;">Godan</button> 
+      <button onclick="checkAnswer('irregular')" type="button" style="font-size: 3rem; color-scheme: dark;">Irregular</button> 
+      <hr/>
+      <div id="score">
+        Score = 0
+      </div>
+      <div id="streak">
+        Streak = 0
+      </div>
+    </div>
+  </div>
+  
+  </body>
 </html>
